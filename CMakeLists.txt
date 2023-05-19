@@ -16,7 +16,8 @@ add_executable(c_f_test_fmain)
 target_sources(c_f_test_fmain PRIVATE fmain.F90)
 target_link_libraries(c_f_test_fmain PRIVATE c_f_test_Fortran c_f_test_CXX)
 
-if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL Intel )
+if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL Intel
+ OR "${CMAKE_Fortran_COMPILER_ID}" STREQUAL IntelLLVM)
 set_target_properties(c_f_test_fmain
   PROPERTIES LINKER_LANGUAGE Fortran
 )
