@@ -1,4 +1,9 @@
 # find parent dir to bin dir
+if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL Cray )
+  find_program(CRAY_Fortran_COMPILER "crayftn")
+  set(CMAKE_Fortran_COMPILER ${CRAY_Fortran_COMPILER})
+endif()
+
 get_filename_component(Fortran_compiler_dir ${CMAKE_Fortran_COMPILER} DIRECTORY)
 get_filename_component(Fortran_compiler_base ${Fortran_compiler_dir} NAME)
 while(NOT "${Fortran_compiler_base}" STREQUAL "bin")

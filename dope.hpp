@@ -42,15 +42,32 @@ namespace detail {
 #undef DOPEY_NOT_INCLUDED_DIRECTLY
 }
 
-template<typename T, size_t R>
+template<typename T, size_t R
+#ifdef DOPEY_INTEL_CRAY_BOOL_FIXUP
+         , std::enable_if_t<not std::is_same<T,bool>::value>* = nullptr
+#endif
+        >
 CFI_cdesc_t const * to_cdesc(dope<T,R> const& d) {
   CFI_cdesc_t const * const a = static_cast<CFI_cdesc_t const *>(static_cast<void const *>(&d));
   assert(a->rank == R);
-  printf("a->type = %ld; detail::type_identifier_v<T> = %ld\n", a->type, detail::type_identifier_v<T>);
   assert(a->type == detail::type_identifier_v<T>);
   assert(a->elem_len == sizeof(T));
   return a;
 }
+
+#ifdef DOPEY_INTEL_CRAY_BOOL_FIXUP
+/* Cray and Intel set the bool type to CFI_type_signed_char.
+ * This may (?) be a bug, but it is ultimately implementation defined */
+template<typename T, size_t R,
+         std::enable_if_t<std::is_same<T,bool>::value>* = nullptr>
+CFI_cdesc_t const * to_cdesc(dope<T,R> const& d) {
+  CFI_cdesc_t const * const a = static_cast<CFI_cdesc_t const *>(static_cast<void const *>(&d));
+  assert(a->rank == R);
+  assert(a->type == CFI_type_signed_char);
+  assert(a->elem_len == sizeof(T));
+  return a;
+}
+#endif
 
 } // namespace dopey
 
