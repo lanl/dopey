@@ -1,7 +1,11 @@
 #ifndef DOPEY_DOPE_HPP
 #define DOPEY_DOPE_HPP
 
+#define DOPEY_NOT_INCLUDED_DIRECTLY 1
 #include "dope_generated_sizes.h"
+#undef DOPEY_NOT_INCLUDED_DIRECTLY
+
+#include <cstdio>
 
 extern "C" {
 #include <ISO_Fortran_binding.h>
@@ -32,10 +36,18 @@ struct dope : dope_base {
   using rank = std::integral_constant<size_t,R>;
 };
 
+namespace detail {
+#define DOPEY_NOT_INCLUDED_DIRECTLY 1
+#include "dope_generated_type_identifier_traits.hpp"
+#undef DOPEY_NOT_INCLUDED_DIRECTLY
+}
+
 template<typename T, size_t R>
 CFI_cdesc_t const * to_cdesc(dope<T,R> const& d) {
   CFI_cdesc_t const * const a = static_cast<CFI_cdesc_t const *>(static_cast<void const *>(&d));
   assert(a->rank == R);
+  printf("a->type = %ld; detail::type_identifier_v<T> = %ld\n", a->type, detail::type_identifier_v<T>);
+  assert(a->type == detail::type_identifier_v<T>);
   assert(a->elem_len == sizeof(T));
   return a;
 }

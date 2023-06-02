@@ -4,8 +4,8 @@ program main
   use dope_mod
   implicit none
 
-  integer(int32), dimension(:,:), allocatable, target :: ia
-  integer(int32), dimension(:,:), pointer :: ip
+  logical(c_bool), dimension(:,:), allocatable, target :: ia
+  logical(c_bool), dimension(:,:), pointer :: ip
   type(dope) :: d
 
   interface
