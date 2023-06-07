@@ -5,14 +5,13 @@
 #include "dope_generated_sizes.h"
 #undef DOPEY_NOT_INCLUDED_DIRECTLY
 
-#include <cstdio>
-
 extern "C" {
 #include <ISO_Fortran_binding.h>
 }
 
-#include <cstdlib>
 #include <type_traits>
+
+#include <cstdbool>
 #include <cstring>
 #include <cassert>
 

@@ -1,6 +1,17 @@
-# find parent dir to bin dir
+# This is a hack to work around compiler wrappers (e.g., Cray and MPI)
+# The search for the ISO_Fortran_binding.h header needs the actual compiler path and not a wrapper path.
+# If a wrapper is being used, this hack finds the actual compiler path.
 if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL Cray )
   find_program(CRAY_Fortran_COMPILER "crayftn")
+  set(CMAKE_Fortran_COMPILER ${CRAY_Fortran_COMPILER})
+elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL Intel )
+  find_program(CRAY_Fortran_COMPILER "ifort")
+  set(CMAKE_Fortran_COMPILER ${CRAY_Fortran_COMPILER})
+elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL GNU )
+  find_program(CRAY_Fortran_COMPILER "gfortran")
+  set(CMAKE_Fortran_COMPILER ${CRAY_Fortran_COMPILER})
+elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL XL )
+  find_program(CRAY_Fortran_COMPILER "xlf")
   set(CMAKE_Fortran_COMPILER ${CRAY_Fortran_COMPILER})
 endif()
 
@@ -19,6 +30,7 @@ find_file(ISO_Fortran_binding_PATH
 			  ${Fortran_compiler_dir}/*/*
 			  ${Fortran_compiler_dir}/*/*/*
 			  ${Fortran_compiler_dir}/*/*/*/*
+			  ${Fortran_compiler_dir}/*/*/*/*/*
 	PATH_SUFFIXES include
 	NO_DEFAULT_PATHS)
 
