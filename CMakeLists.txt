@@ -1,39 +1,70 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(c_f_test LANGUAGES CXX Fortran)
+set(dopey.is_subproject FALSE)
+if( DEFINED PROJECT_NAME )
+  set(dopey.is_subproject TRUE)
+endif()
+
+cmake_minimum_required(VERSION 3.14)
+
+project(dopey LANGUAGES CXX Fortran)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
-find_package(ISO_Fortran_binding REQUIRED)
+include(CTest)
+enable_testing()
 
-set(CMAKE_CXX_STANDARD 14)
+include(CMakeDependentOption)
+CMAKE_DEPENDENT_OPTION(dopey.testing
+  "enable dopoy testing"
+  ON
+  "NOT ${dopey.is_subproject} AND BUILD_TESTING"
+  OFF
+)
 
-add_library(c_f_test_CXX cfunc.cpp dope.cpp dope.hpp)
-target_link_libraries(c_f_test_CXX PRIVATE ISO_Fortran_binding)
-target_compile_definitions(c_f_test_CXX PRIVATE
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+add_library(dopey_Fortran)
+add_library(dopey::dopey_Fortran ALIAS dopey_Fortran)
+
+target_include_directories(dopey_Fortran
+PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
+PUBLIC
+  $<INSTALL_INTERFACE:include>
+)
+
+add_library(dopey_CXX)
+add_library(dopey::dopey_CXX ALIAS dopey_CXX)
+
+target_compile_features(dopey_CXX PUBLIC
+  cxx_std_14
+)
+
+target_include_directories(dopey_CXX PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
+  $<INSTALL_INTERFACE:include>
+)
+
+target_compile_definitions(dopey_CXX PUBLIC
   $<$<Fortran_COMPILER_ID:Intel>:DOPEY_INTEL_CRAY_BOOL_FIXUP>
-  $<$<Fortran_COMPILER_ID:Cray>:DOPEY_INTEL_CRAY_BOOL_FIXUP>
+  $<$<Fortran_COMPILER_ID:CRAY>:DOPEY_INTEL_CRAY_BOOL_FIXUP>
 )
-add_library(c_f_test_Fortran ffunc.F90 dope.F90)
 
-add_executable(c_f_test_fmain)
-target_sources(c_f_test_fmain PRIVATE fmain.F90)
-target_link_libraries(c_f_test_fmain PRIVATE c_f_test_Fortran c_f_test_CXX)
-
-if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL Intel
- OR "${CMAKE_Fortran_COMPILER_ID}" STREQUAL IntelLLVM
- OR "${CMAKE_Fortran_COMPILER_ID}" STREQUAL Cray)
-set_target_properties(c_f_test_fmain
-  PROPERTIES LINKER_LANGUAGE Fortran
+find_package(ISO_Fortran_binding REQUIRED)
+target_link_libraries(dopey_CXX PUBLIC
+  ISO_Fortran_binding
 )
-endif()
 
-add_executable(c_f_test_cmain)
-target_sources(c_f_test_cmain PRIVATE cmain.cpp)
-target_link_libraries(c_f_test_cmain PRIVATE c_f_test_Fortran c_f_test_CXX ISO_Fortran_binding)
+add_subdirectory(src)
 
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL Cray)
-set_target_properties(c_f_test_cmain
-  PROPERTIES LINKER_LANGUAGE Fortran
-)
+if( dopey.testing )
+  add_library(dopey_testing INTERFACE)
+  target_link_libraries(dopey_testing INTERFACE
+    dopey_Fortran dopey_CXX
+  )
+
+  find_package(PFUNIT REQUIRED)
+
+  add_subdirectory(test)
 endif()

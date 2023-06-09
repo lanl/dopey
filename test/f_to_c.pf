@@ -1,0 +1,214 @@
+module f_to_c
+  use funit
+  implicit none
+
+  interface
+    function verify_int_1d_array_c(d) result(retval) bind(c)
+      use, intrinsic :: iso_fortran_env
+      use, intrinsic :: iso_c_binding
+      use dope_mod
+      implicit none
+      logical(c_bool) :: retval
+      type(dope) :: d
+    end function
+
+    function verify_int_2d_array_c(d) result(retval) bind(c)
+      use, intrinsic :: iso_fortran_env
+      use, intrinsic :: iso_c_binding
+      use dope_mod
+      implicit none
+      logical(c_bool) :: retval
+      type(dope) :: d
+    end function
+
+    function verify_int_3d_array_c(d) result(retval) bind(c)
+      use, intrinsic :: iso_fortran_env
+      use, intrinsic :: iso_c_binding
+      use dope_mod
+      implicit none
+      logical(c_bool) :: retval
+      type(dope) :: d
+    end function
+
+    function verify_float_1d_array_c(d) result(retval) bind(c)
+      use, intrinsic :: iso_fortran_env
+      use, intrinsic :: iso_c_binding
+      use dope_mod
+      implicit none
+      logical(c_bool) :: retval
+      type(dope) :: d
+    end function
+
+    function verify_double_1d_array_c(d) result(retval) bind(c)
+      use, intrinsic :: iso_fortran_env
+      use, intrinsic :: iso_c_binding
+      use dope_mod
+      implicit none
+      logical(c_bool) :: retval
+      type(dope) :: d
+    end function
+
+    function verify_bool_1d_array_c(d) result(retval) bind(c)
+      use, intrinsic :: iso_fortran_env
+      use, intrinsic :: iso_c_binding
+      use dope_mod
+      implicit none
+      logical(c_bool) :: retval
+      type(dope) :: d
+    end function
+  end interface
+
+contains
+
+  @test
+  subroutine test_int32_1d()
+    use, intrinsic :: iso_fortran_env
+    use funit
+    use dope_mod
+    implicit none
+
+    integer(int32), dimension(5) :: a
+    integer :: i
+
+    do i=1, 5
+      a(i) = i
+    end do
+
+    @assertTrue(logical(verify_int_1d_array_c(make_dope(a))))
+  end subroutine
+
+  @test
+  subroutine test_int32_1d_allocatable()
+    use, intrinsic :: iso_fortran_env
+    use funit
+    use dope_mod
+    implicit none
+
+    integer(int32), dimension(:), allocatable :: a
+    integer :: i
+
+    allocate(a(5))
+    do i=1, 5
+      a(i) = i
+    end do
+
+    @assertTrue(logical(verify_int_1d_array_c(make_dope(a))))
+  end subroutine
+
+  @test
+  subroutine test_int32_1d_pointer()
+    use, intrinsic :: iso_fortran_env
+    use funit
+    use dope_mod
+    implicit none
+
+    integer(int32), dimension(:), pointer :: a
+    integer :: i
+
+    allocate(a(5))
+    do i=1, 5
+      a(i) = i
+    end do
+
+    @assertTrue(logical(verify_int_1d_array_c(make_dope(a))))
+  end subroutine
+
+  @test
+  subroutine test_int32_2d()
+    use, intrinsic :: iso_fortran_env
+    use funit
+    use dope_mod
+    implicit none
+
+    integer(int32), dimension(5,5) :: a
+    integer :: i, j
+
+    do i=1, 5
+      do j=1, 5
+        a(i,j) = i*j
+      end do
+    end do
+
+    @assertTrue(logical(verify_int_2d_array_c(make_dope(a))))
+
+    @assertTrue(logical(verify_int_1d_array_c(make_dope(a(1,:)))))
+  end subroutine
+
+  @test
+  subroutine test_int32_3d()
+    use, intrinsic :: iso_fortran_env
+    use funit
+    use dope_mod
+    implicit none
+
+    integer(int32), dimension(5,5,5) :: a
+    integer :: i, j, k
+
+    do i=1, 5
+      do j=1, 5
+        do k=1, 5
+          a(i,j,k) = i*j*k
+        end do
+      end do
+    end do
+
+    @assertTrue(logical(verify_int_3d_array_c(make_dope(a))))
+
+    @assertTrue(logical(verify_int_2d_array_c(make_dope(a(1,:,:)))))
+
+    @assertTrue(logical(verify_int_1d_array_c(make_dope(a(1,1,:)))))
+  end subroutine
+
+  @test
+  subroutine test_real32_1d()
+    use, intrinsic :: iso_fortran_env
+    use funit
+    use dope_mod
+    implicit none
+
+    real(real32), dimension(5) :: a
+    integer :: i
+
+    do i=1, 5
+      a(i) = i
+    end do
+
+    @assertTrue(logical(verify_float_1d_array_c(make_dope(a))))
+  end subroutine
+
+  @test
+  subroutine test_real64_1d()
+    use, intrinsic :: iso_fortran_env
+    use funit
+    use dope_mod
+    implicit none
+
+    real(real64), dimension(5) :: a
+    integer :: i
+
+    do i=1, 5
+      a(i) = i
+    end do
+
+    @assertTrue(logical(verify_double_1d_array_c(make_dope(a))))
+  end subroutine
+
+  @test
+  subroutine test_c_bool_1d()
+    use, intrinsic :: iso_fortran_env
+    use, intrinsic :: iso_c_binding
+    use funit
+    use dope_mod
+    implicit none
+
+    logical(c_bool), dimension(5) :: a
+    integer :: i
+
+    a = .false.
+    do i=1, 5
+      if( mod(i,2) == 0 ) a(i) = .true.
+    end do
+
+    @assertTrue(logical(verify_bool_1d_array_c(make_dope(a))))
+  end subroutine
+end module

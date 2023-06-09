@@ -2,7 +2,7 @@
 #define DOPEY_DOPE_HPP
 
 #define DOPEY_NOT_INCLUDED_DIRECTLY 1
-#include "dope_generated_sizes.h"
+#include "dopey/dope_generated_sizes.h"
 #undef DOPEY_NOT_INCLUDED_DIRECTLY
 
 extern "C" {
@@ -37,7 +37,7 @@ struct dope : dope_base {
 
 namespace detail {
 #define DOPEY_NOT_INCLUDED_DIRECTLY 1
-#include "dope_generated_type_identifier_traits.hpp"
+#include "dopey/dope_generated_type_identifier_traits.hpp"
 #undef DOPEY_NOT_INCLUDED_DIRECTLY
 }
 
