@@ -7,7 +7,10 @@ endif()
 
 cmake_minimum_required(VERSION 3.14)
 
-project(dopey LANGUAGES CXX Fortran)
+project(dopey
+  LANGUAGES CXX Fortran
+  VERSION 0.1.0
+)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
@@ -32,7 +35,7 @@ PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
 PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:include/dopey>
 )
 
 add_library(dopey_CXX)
@@ -69,3 +72,39 @@ if( dopey.testing )
 
   add_subdirectory(test)
 endif()
+
+install(TARGETS dopey_Fortran dopey_CXX EXPORT dopeyTargets
+  LIBRARY DESTINATION lib
+)
+
+install(
+  FILES
+    src/dopey/dope_generated_sizes.h
+    src/dopey/dope.hpp
+    src/dopey/dope_generated_type_identifier_traits.hpp
+    ${CMAKE_CURRENT_BINARY_DIR}/dope_mod.mod
+  DESTINATION include/dopey
+)
+
+install(EXPORT dopeyTargets
+  FILE dopeyTargets.cmake
+  NAMESPACE dopey::
+  DESTINATION share/cmake/dopey
+)
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(dopeyConfigVersion.cmake
+  VERSION ${dopey_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+  cmake/dopeyConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/dopeyConfigVersion.cmake
+  DESTINATION share/cmake/dopey
+)
+
+install(FILES
+  cmake/FindISO_Fortran_binding.cmake
+  DESTINATION share/cmake/dopey/cmake
+)
