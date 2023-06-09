@@ -31,6 +31,7 @@ target_include_directories(dopey_Fortran
 PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
 PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
   $<INSTALL_INTERFACE:include>
 )
 
