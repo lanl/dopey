@@ -106,9 +106,12 @@ def main():
     
     ap.add_argument('RANK', type=int)
     ap.add_argument('TYPE', nargs='+')
-    ap.add_argument('--outdir', type=str, default='')
+    ap.add_argument('--outdir', type=str, default='.')
     
     args = ap.parse_args()
+
+    if not os.path.isdir(args.outdir):
+        os.mkdir(args.outdir)
 
     with open(os.path.join(args.outdir, 'dope_generated_sizes.h'), 'w') as dope_sizes:
         write_generated_warning(dope_sizes, prepro_comment)
