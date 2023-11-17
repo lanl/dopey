@@ -4,30 +4,14 @@ ctype_to_ftype = {
     'float' : 'real',
     'double' : 'real' }
 
-dope_CFI_cdesc_t_size = {
-    'gnu' : 24,
-    'cray' : 64,
-    'intel' : 72,
-    'xl' : 104 }
-
-dope_CFI_dim_t_size = {
-    'gnu' : 24,
-    'cray' : 24,
-    'intel' : 24,
-    'xl' : 24 }
-
 def write_dope_sizes(file, rank):
     file.write((
         '#ifndef DOPEY_DOPE_SIZES_H\n'
         '#define DOPEY_DOPE_SIZES_H\n'
         '\n'
-        '#define DOPEY_DOPE_BASE_SIZE {BASE:d}\n'
-        '#define DOPEY_DOPE_PER_DIM_SIZE {DIM:d}\n'
         '#define DOPEY_DOPE_MAX_RANK {RANK:d}\n'
         '\n'
         '#endif\n').format(
-            BASE=max(dope_CFI_cdesc_t_size.values()),
-            DIM=max(dope_CFI_dim_t_size.values()),
             RANK=rank)
     )
 
@@ -90,9 +74,9 @@ def write_fortran_definitions(file, rank, ctype):
 
 def write_c_definition(file, rank, ctype):
     file.write((
-        'void make_dope_{RANK:d}d_{TYPE:s}(dope_base& d, CFI_cdesc_t const& a) {{\n'
-        '  assert(dope_base::base_size+a.rank*dope_base::per_rank_size <= dope_base::buffer_size);\n'
-        '  std::memcpy(&d, &a, dope_base::base_size + a.rank * dope_base::per_rank_size);\n'
+        'void make_dope_{RANK:d}d_{TYPE:s}(dope<{TYPE:s},{RANK:d}>& d, CFI_cdesc_t const& a) {{\n'
+        '  assert(a.rank <= DOPEY_DOPE_MAX_RANK);\n'
+        '  d = detail::make_dope<{TYPE:s},{RANK:d}>(a);\n'
         '}}\n'
         '\n').format(
                 RANK=rank,
@@ -116,50 +100,59 @@ def write_cpp_type_identifier_trait(file, ctype):
 
 def main():
     import argparse
+    import os
     
     ap = argparse.ArgumentParser()
     
     ap.add_argument('RANK', type=int)
     ap.add_argument('TYPE', nargs='+')
+    ap.add_argument('--outdir', type=str, default='')
     
     args = ap.parse_args()
 
-    dope_sizes = open('dope_generated_sizes.h', 'w')
-    write_generated_warning(dope_sizes, prepro_comment)
-    write_inclusion_guard(dope_sizes)
-    write_dope_sizes(dope_sizes, args.RANK)
+    with open(os.path.join(args.outdir, 'dope_generated_sizes.h'), 'w') as dope_sizes:
+        write_generated_warning(dope_sizes, prepro_comment)
+        write_inclusion_guard(dope_sizes)
+        write_dope_sizes(dope_sizes, args.RANK)
     
-    fortran_interfaces = open('dope_generated_fortran_interfaces.h', 'w')
-    write_generated_warning(fortran_interfaces, fortran_comment)
-    write_inclusion_guard(fortran_interfaces)
-    fortran_definitions = open('dope_generated_fortran_definitions.h', 'w')
-    write_generated_warning(fortran_definitions, fortran_comment)
-    
-    c_definitions = open('dope_generated_c_definitions.hpp', 'w')
-    write_generated_warning(c_definitions, c_comment)
-    write_inclusion_guard(c_definitions)
+    with open(os.path.join(args.outdir, 'dope_generated_fortran_interfaces.h'), 'w') as fortran_interfaces:
+        write_generated_warning(fortran_interfaces, fortran_comment)
+        write_inclusion_guard(fortran_interfaces)
 
-    cpp_type_identifiers = open('dope_generated_type_identifier_traits.hpp', 'w')
-    write_generated_warning(cpp_type_identifiers, c_comment)
-    write_inclusion_guard(cpp_type_identifiers)
-    cpp_type_identifiers.write((
-        'template<typename T>\n'
-        'struct type_identifier {};\n'
-        '\n'))
-    
-    for ctype in args.TYPE:
-        for rank in range(1, args.RANK+1):
-            write_fortran_interface(fortran_interfaces, rank, ctype)
-            write_fortran_definitions(fortran_definitions, rank, ctype)
-    
-            write_c_definition(c_definitions, rank, ctype)
+        for ctype in args.TYPE:
+            for rank in range(1, args.RANK+1):
+                write_fortran_interface(fortran_interfaces, rank, ctype)
 
-        write_cpp_type_identifier_trait(cpp_type_identifiers, ctype)
+    with open(os.path.join(args.outdir, 'dope_generated_fortran_definitions.h'), 'w') as fortran_definitions:
+        write_generated_warning(fortran_definitions, fortran_comment)
 
-    cpp_type_identifiers.write((
-        'template<typename T>\n'
-        'constexpr static auto type_identifier_v = type_identifier<T>::value;\n'
-        '\n'))
+        for ctype in args.TYPE:
+            for rank in range(1, args.RANK+1):
+                write_fortran_definitions(fortran_definitions, rank, ctype)
+    
+    with open(os.path.join(args.outdir, 'dope_generated_c_definitions.hpp'), 'w') as c_definitions:
+        write_generated_warning(c_definitions, c_comment)
+        write_inclusion_guard(c_definitions)
+
+        for ctype in args.TYPE:
+            for rank in range(1, args.RANK+1):
+                write_c_definition(c_definitions, rank, ctype)
+
+    with open(os.path.join(args.outdir, 'dope_generated_type_identifier_traits.hpp'), 'w') as cpp_type_identifiers:
+        write_generated_warning(cpp_type_identifiers, c_comment)
+        write_inclusion_guard(cpp_type_identifiers)
+        cpp_type_identifiers.write((
+            'template<typename T>\n'
+            'struct type_identifier {};\n'
+            '\n'))
+        
+        for ctype in args.TYPE:
+            write_cpp_type_identifier_trait(cpp_type_identifiers, ctype)
+
+        cpp_type_identifiers.write((
+            'template<typename T>\n'
+            'constexpr static auto type_identifier_v = type_identifier<T>::value;\n'
+            '\n'))
     
 if __name__ == "__main__":
     main()

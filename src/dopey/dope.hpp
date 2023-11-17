@@ -9,6 +9,7 @@ extern "C" {
 #include <ISO_Fortran_binding.h>
 }
 
+#include <utility>
 #include <type_traits>
 
 #include <cstdbool>
@@ -19,20 +20,32 @@ namespace dopey {
 
 extern "C" {
 
-struct dope_base {
-  constexpr static size_t base_size = sizeof(CFI_cdesc_t);
-  constexpr static size_t per_rank_size = sizeof(CFI_dim_t);
-  constexpr static size_t buffer_size =
-    DOPEY_DOPE_BASE_SIZE + DOPEY_DOPE_PER_DIM_SIZE * DOPEY_DOPE_MAX_RANK;
-  unsigned char buffer[buffer_size];
+struct dim_t {
+  ptrdiff_t lower_bound;
+  ptrdiff_t extent;
+  ptrdiff_t sm;
+};
+
+struct cdesc_t {
+  void* base_addr;
+  size_t elem_len;
+  ptrdiff_t rank;
+  ptrdiff_t type;
+  dim_t dim[DOPEY_DOPE_MAX_RANK];
 };
 
 } // extern "C"
 
 template<typename T, size_t R>
-struct dope : dope_base {
+struct dope : cdesc_t {
   using type = T;
   using rank = std::integral_constant<size_t,R>;
+
+  template<typename... ArgTs>
+  constexpr
+  dope(ArgTs&&... args)
+  : cdesc_t{std::forward<ArgTs>(args)...}
+  {}
 };
 
 namespace detail {
@@ -46,10 +59,10 @@ template<typename T, size_t R
          , std::enable_if_t<not std::is_same<T,bool>::value>* = nullptr
 #endif
         >
-CFI_cdesc_t const * to_cdesc(dope<T,R> const& d) {
-  CFI_cdesc_t const * const a = static_cast<CFI_cdesc_t const *>(static_cast<void const *>(&d));
+cdesc_t const * to_cdesc(dope<T,R> const& d) {
+  cdesc_t const * const a = static_cast<cdesc_t const *>(&d);
   assert(a->rank == R);
-  assert(a->type == detail::type_identifier_v<T>);
+  assert(a->type == detail::type_identifier_v<std::remove_cv_t<T>>);
   assert(a->elem_len == sizeof(T));
   return a;
 }
@@ -59,8 +72,8 @@ CFI_cdesc_t const * to_cdesc(dope<T,R> const& d) {
  * This may (?) be a bug, but it is ultimately implementation defined */
 template<typename T, size_t R,
          std::enable_if_t<std::is_same<T,bool>::value>* = nullptr>
-CFI_cdesc_t const * to_cdesc(dope<T,R> const& d) {
-  CFI_cdesc_t const * const a = static_cast<CFI_cdesc_t const *>(static_cast<void const *>(&d));
+cdesc_t const * to_cdesc(dope<T,R> const& d) {
+  cdesc_t const * const a = static_cast<cdesc_t const *>(&d);
   assert(a->rank == R);
   assert(a->type == CFI_type_signed_char);
   assert(a->elem_len == sizeof(T));

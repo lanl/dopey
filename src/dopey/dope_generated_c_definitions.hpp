@@ -5,63 +5,63 @@
 #error "dope_generated_c_definitions.hpp should not be included directly"
 #endif
 
-void make_dope_1d_int(dope_base& d, CFI_cdesc_t const& a) {
-  assert(dope_base::base_size+a.rank*dope_base::per_rank_size <= dope_base::buffer_size);
-  std::memcpy(&d, &a, dope_base::base_size + a.rank * dope_base::per_rank_size);
+void make_dope_1d_int(dope<int,1>& d, CFI_cdesc_t const& a) {
+  assert(a.rank <= DOPEY_DOPE_MAX_RANK);
+  d = detail::make_dope<int,1>(a);
 }
 
-void make_dope_2d_int(dope_base& d, CFI_cdesc_t const& a) {
-  assert(dope_base::base_size+a.rank*dope_base::per_rank_size <= dope_base::buffer_size);
-  std::memcpy(&d, &a, dope_base::base_size + a.rank * dope_base::per_rank_size);
+void make_dope_2d_int(dope<int,2>& d, CFI_cdesc_t const& a) {
+  assert(a.rank <= DOPEY_DOPE_MAX_RANK);
+  d = detail::make_dope<int,2>(a);
 }
 
-void make_dope_3d_int(dope_base& d, CFI_cdesc_t const& a) {
-  assert(dope_base::base_size+a.rank*dope_base::per_rank_size <= dope_base::buffer_size);
-  std::memcpy(&d, &a, dope_base::base_size + a.rank * dope_base::per_rank_size);
+void make_dope_3d_int(dope<int,3>& d, CFI_cdesc_t const& a) {
+  assert(a.rank <= DOPEY_DOPE_MAX_RANK);
+  d = detail::make_dope<int,3>(a);
 }
 
-void make_dope_1d_float(dope_base& d, CFI_cdesc_t const& a) {
-  assert(dope_base::base_size+a.rank*dope_base::per_rank_size <= dope_base::buffer_size);
-  std::memcpy(&d, &a, dope_base::base_size + a.rank * dope_base::per_rank_size);
+void make_dope_1d_float(dope<float,1>& d, CFI_cdesc_t const& a) {
+  assert(a.rank <= DOPEY_DOPE_MAX_RANK);
+  d = detail::make_dope<float,1>(a);
 }
 
-void make_dope_2d_float(dope_base& d, CFI_cdesc_t const& a) {
-  assert(dope_base::base_size+a.rank*dope_base::per_rank_size <= dope_base::buffer_size);
-  std::memcpy(&d, &a, dope_base::base_size + a.rank * dope_base::per_rank_size);
+void make_dope_2d_float(dope<float,2>& d, CFI_cdesc_t const& a) {
+  assert(a.rank <= DOPEY_DOPE_MAX_RANK);
+  d = detail::make_dope<float,2>(a);
 }
 
-void make_dope_3d_float(dope_base& d, CFI_cdesc_t const& a) {
-  assert(dope_base::base_size+a.rank*dope_base::per_rank_size <= dope_base::buffer_size);
-  std::memcpy(&d, &a, dope_base::base_size + a.rank * dope_base::per_rank_size);
+void make_dope_3d_float(dope<float,3>& d, CFI_cdesc_t const& a) {
+  assert(a.rank <= DOPEY_DOPE_MAX_RANK);
+  d = detail::make_dope<float,3>(a);
 }
 
-void make_dope_1d_double(dope_base& d, CFI_cdesc_t const& a) {
-  assert(dope_base::base_size+a.rank*dope_base::per_rank_size <= dope_base::buffer_size);
-  std::memcpy(&d, &a, dope_base::base_size + a.rank * dope_base::per_rank_size);
+void make_dope_1d_double(dope<double,1>& d, CFI_cdesc_t const& a) {
+  assert(a.rank <= DOPEY_DOPE_MAX_RANK);
+  d = detail::make_dope<double,1>(a);
 }
 
-void make_dope_2d_double(dope_base& d, CFI_cdesc_t const& a) {
-  assert(dope_base::base_size+a.rank*dope_base::per_rank_size <= dope_base::buffer_size);
-  std::memcpy(&d, &a, dope_base::base_size + a.rank * dope_base::per_rank_size);
+void make_dope_2d_double(dope<double,2>& d, CFI_cdesc_t const& a) {
+  assert(a.rank <= DOPEY_DOPE_MAX_RANK);
+  d = detail::make_dope<double,2>(a);
 }
 
-void make_dope_3d_double(dope_base& d, CFI_cdesc_t const& a) {
-  assert(dope_base::base_size+a.rank*dope_base::per_rank_size <= dope_base::buffer_size);
-  std::memcpy(&d, &a, dope_base::base_size + a.rank * dope_base::per_rank_size);
+void make_dope_3d_double(dope<double,3>& d, CFI_cdesc_t const& a) {
+  assert(a.rank <= DOPEY_DOPE_MAX_RANK);
+  d = detail::make_dope<double,3>(a);
 }
 
-void make_dope_1d_bool(dope_base& d, CFI_cdesc_t const& a) {
-  assert(dope_base::base_size+a.rank*dope_base::per_rank_size <= dope_base::buffer_size);
-  std::memcpy(&d, &a, dope_base::base_size + a.rank * dope_base::per_rank_size);
+void make_dope_1d_bool(dope<bool,1>& d, CFI_cdesc_t const& a) {
+  assert(a.rank <= DOPEY_DOPE_MAX_RANK);
+  d = detail::make_dope<bool,1>(a);
 }
 
-void make_dope_2d_bool(dope_base& d, CFI_cdesc_t const& a) {
-  assert(dope_base::base_size+a.rank*dope_base::per_rank_size <= dope_base::buffer_size);
-  std::memcpy(&d, &a, dope_base::base_size + a.rank * dope_base::per_rank_size);
+void make_dope_2d_bool(dope<bool,2>& d, CFI_cdesc_t const& a) {
+  assert(a.rank <= DOPEY_DOPE_MAX_RANK);
+  d = detail::make_dope<bool,2>(a);
 }
 
-void make_dope_3d_bool(dope_base& d, CFI_cdesc_t const& a) {
-  assert(dope_base::base_size+a.rank*dope_base::per_rank_size <= dope_base::buffer_size);
-  std::memcpy(&d, &a, dope_base::base_size + a.rank * dope_base::per_rank_size);
+void make_dope_3d_bool(dope<bool,3>& d, CFI_cdesc_t const& a) {
+  assert(a.rank <= DOPEY_DOPE_MAX_RANK);
+  d = detail::make_dope<bool,3>(a);
 }
 

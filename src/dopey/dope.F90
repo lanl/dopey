@@ -11,11 +11,18 @@ module dope_mod
   public :: dope
   public :: make_dope
 
-  integer, parameter :: buffer_size = &
-    DOPEY_DOPE_BASE_SIZE + DOPEY_DOPE_PER_DIM_SIZE * DOPEY_DOPE_MAX_RANK
+  type, bind(c) :: dim_t
+    integer(c_int64_t) :: lower_bound
+    integer(c_int64_t) :: extent
+    integer(c_int64_t) :: sm
+  end type
 
   type, bind(c) :: dope
-    character(c_char), dimension(buffer_size) :: buffer
+    type(c_ptr) :: base_addr
+    integer(c_size_t) :: elem_len
+    integer(c_int64_t) :: rank
+    integer(c_int64_t) :: type
+    type(dim_t), dimension(DOPEY_DOPE_MAX_RANK) :: dim
   end type
 
 !   interface make_dope_c
