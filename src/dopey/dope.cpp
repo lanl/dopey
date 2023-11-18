@@ -18,6 +18,11 @@ auto make_dope(CFI_cdesc_t const& a) {
   return make_dope_impl<T,R>(a, std::make_index_sequence<R>{});
 }
 
+template<typename T>
+auto make_dope0(T* const a) {
+  return dope<T,0>{cdesc_t{a, sizeof(T), 0, detail::type_identifier_v<std::remove_cv_t<T>>, {}}};
+}
+
 } // namespace detail
 
 extern "C" {
