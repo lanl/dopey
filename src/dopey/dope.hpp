@@ -13,6 +13,7 @@ extern "C" {
 #include <type_traits>
 
 #include <cstdbool>
+#include <cstddef>
 #include <cstring>
 
 namespace dopey {
