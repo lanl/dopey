@@ -14,57 +14,43 @@ extern "C" {
 
 #include <cstdbool>
 #include <cstring>
-#include <cassert>
 
 namespace dopey {
 
-extern "C" {
-
-struct dim_t {
-  ptrdiff_t lower_bound;
-  ptrdiff_t extent;
-  ptrdiff_t sm;
-};
-
-struct cdesc_t {
-  void* base_addr;
-  size_t elem_len;
-  ptrdiff_t rank;
-  ptrdiff_t type;
-  dim_t dim[DOPEY_DOPE_MAX_RANK];
-};
-
-} // extern "C"
-
 template<typename T, size_t R>
-struct dope : cdesc_t {
+struct dope { // : cdesc_t {
   using type = T;
   using rank = std::integral_constant<size_t,R>;
 
-  template<typename... ArgTs>
-  constexpr
-  dope(ArgTs&&... args)
-  : cdesc_t{std::forward<ArgTs>(args)...}
-  {}
+  struct dim_t {
+    ptrdiff_t lower_bound;
+    ptrdiff_t extent;
+    ptrdiff_t sm;
+  };
+
+  type* base_addr;
+  size_t elem_len;
+  ptrdiff_t r;
+  ptrdiff_t t;
+  dim_t dim[DOPEY_DOPE_MAX_RANK];
 };
 
 namespace detail {
+
 #define DOPEY_NOT_INCLUDED_DIRECTLY 1
 #include "dopey/dope_generated_type_identifier_traits.hpp"
 #undef DOPEY_NOT_INCLUDED_DIRECTLY
-}
 
 template<typename T, size_t R
 #ifdef DOPEY_INTEL_CRAY_BOOL_FIXUP
          , std::enable_if_t<not std::is_same<T,bool>::value>* = nullptr
 #endif
         >
-cdesc_t const * to_cdesc(dope<T,R> const& d) {
-  cdesc_t const * const a = static_cast<cdesc_t const *>(&d);
-  assert(a->rank == R);
-  assert(a->type == detail::type_identifier_v<std::remove_cv_t<T>>);
-  assert(a->elem_len == sizeof(T));
-  return a;
+constexpr
+bool valid(dope<T,R> const& d) {
+  return d.r == R
+     and d.t == detail::type_identifier_v<std::remove_cv_t<T>>
+     and d.elem_len == sizeof(T);
 }
 
 #ifdef DOPEY_INTEL_CRAY_BOOL_FIXUP
@@ -72,14 +58,15 @@ cdesc_t const * to_cdesc(dope<T,R> const& d) {
  * This may (?) be a bug, but it is ultimately implementation defined */
 template<typename T, size_t R,
          std::enable_if_t<std::is_same<T,bool>::value>* = nullptr>
-cdesc_t const * to_cdesc(dope<T,R> const& d) {
-  cdesc_t const * const a = static_cast<cdesc_t const *>(&d);
-  assert(a->rank == R);
-  assert(a->type == CFI_type_signed_char);
-  assert(a->elem_len == sizeof(T));
-  return a;
+constexpr
+bool valid(dope<T,R> const& d) {
+  return d.r == R
+     and d.t == CFI_type_signed_char
+     and d.elem_len == sizeof(T);
 }
 #endif
+
+} // namespace detail
 
 } // namespace dopey
 

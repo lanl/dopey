@@ -53,8 +53,6 @@ bool verify_int_2d_array_c(dopey::dope<int,2>& d) {
 }
 
 bool verify_int_3d_array_c(dopey::dope<int,3>& d) {
-  auto cdesc = to_cdesc(d);
-
   auto stride0 = d.dim[0].sm / d.elem_len;
   auto stride1 = d.dim[1].sm / d.elem_len;
   auto stride2 = d.dim[2].sm / d.elem_len;
@@ -74,8 +72,6 @@ bool verify_int_3d_array_c(dopey::dope<int,3>& d) {
 }
 
 bool verify_float_1d_array_c(dopey::dope<float,1>& d) {
-  auto cdesc = to_cdesc(d);
-
   auto stride0 = d.dim[0].sm / d.elem_len;
 
   bool result = true;
@@ -87,8 +83,6 @@ bool verify_float_1d_array_c(dopey::dope<float,1>& d) {
 }
 
 bool verify_double_1d_array_c(dopey::dope<double,1>& d) {
-  auto cdesc = to_cdesc(d);
-
   auto stride0 = d.dim[0].sm / d.elem_len;
 
   bool result = true;
@@ -100,8 +94,6 @@ bool verify_double_1d_array_c(dopey::dope<double,1>& d) {
 }
 
 bool verify_bool_1d_array_c(dopey::dope<bool,1>& d) {
-  auto cdesc = to_cdesc(d);
-
   auto stride0 = d.dim[0].sm / d.elem_len;
 
   bool result = true;

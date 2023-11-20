@@ -104,6 +104,7 @@ def write_c_definition(file, rank, ctype):
         file.write((
             'void make_dope_{RANK:d}d_{TYPE:s}(dope<{TYPE:s},{RANK:d}>& d, CFI_cdesc_t const& a) {{\n'
             '  d = detail::make_dope<{TYPE:s},{RANK:d}>(a);\n'
+            '  assert( detail::valid(d) );\n'
             '}}\n'
             '\n').format(
                     RANK=rank,

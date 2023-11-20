@@ -10,7 +10,7 @@ namespace detail {
 
 template<typename T, size_t R, size_t... I>
 auto make_dope_impl(CFI_cdesc_t const& a, std::index_sequence<I...>) {
-  return dope<T,R>{cdesc_t{a.base_addr, a.elem_len, a.rank, a.type, {dim_t{a.dim[I].lower_bound, a.dim[I].extent, a.dim[I].sm}...}}};
+  return dope<T,R>{static_cast<T*>(a.base_addr), a.elem_len, a.rank, a.type, {{a.dim[I].lower_bound, a.dim[I].extent, a.dim[I].sm}...}};
 }
 
 template<typename T, size_t R>
@@ -20,7 +20,7 @@ auto make_dope(CFI_cdesc_t const& a) {
 
 template<typename T>
 auto make_dope0(T* const a) {
-  return dope<T,0>{cdesc_t{a, sizeof(T), 0, detail::type_identifier_v<std::remove_cv_t<T>>, {}}};
+  return dope<T,0>{a, sizeof(T), 0, detail::type_identifier_v<std::remove_cv_t<T>>, {}};
 }
 
 } // namespace detail
