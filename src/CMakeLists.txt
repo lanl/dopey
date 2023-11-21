@@ -32,13 +32,9 @@ target_link_libraries(dopey_CXX PUBLIC
   ISO_Fortran_binding
 )
 
-set(prefix $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>$<INSTALL_INTERFACE:include>)
-list(APPEND dopey_generated_shared
-  ${prefix}/dopey/dope_generated_sizes.h
-)
-
 set(prefix $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 list(APPEND dopey_generated_Fortran
+  ${prefix}/dopey/dope_generated_fortran_types.h
   ${prefix}/dopey/dope_generated_fortran_definitions.h
   ${prefix}/dopey/dope_generated_fortran_interfaces.h
 )

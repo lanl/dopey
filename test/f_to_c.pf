@@ -9,7 +9,7 @@ module f_to_c
       use dope_mod
       implicit none
       logical(c_bool) :: retval
-      type(dope) :: d
+      type(dope0) :: d
     end function
 
     function verify_float_0d_array_c(d) result(retval) bind(c)
@@ -18,7 +18,7 @@ module f_to_c
       use dope_mod
       implicit none
       logical(c_bool) :: retval
-      type(dope) :: d
+      type(dope0) :: d
     end function
 
     function verify_double_0d_array_c(d) result(retval) bind(c)
@@ -27,7 +27,7 @@ module f_to_c
       use dope_mod
       implicit none
       logical(c_bool) :: retval
-      type(dope) :: d
+      type(dope0) :: d
     end function
 
     function verify_bool_0d_array_c(d) result(retval) bind(c)
@@ -36,7 +36,7 @@ module f_to_c
       use dope_mod
       implicit none
       logical(c_bool) :: retval
-      type(dope) :: d
+      type(dope0) :: d
     end function
 
     function verify_int_1d_array_c(d) result(retval) bind(c)
@@ -45,7 +45,7 @@ module f_to_c
       use dope_mod
       implicit none
       logical(c_bool) :: retval
-      type(dope) :: d
+      type(dope1) :: d
     end function
 
     function verify_int_2d_array_c(d) result(retval) bind(c)
@@ -54,7 +54,7 @@ module f_to_c
       use dope_mod
       implicit none
       logical(c_bool) :: retval
-      type(dope) :: d
+      type(dope2) :: d
     end function
 
     function verify_int_3d_array_c(d) result(retval) bind(c)
@@ -63,7 +63,7 @@ module f_to_c
       use dope_mod
       implicit none
       logical(c_bool) :: retval
-      type(dope) :: d
+      type(dope3) :: d
     end function
 
     function verify_float_1d_array_c(d) result(retval) bind(c)
@@ -72,7 +72,7 @@ module f_to_c
       use dope_mod
       implicit none
       logical(c_bool) :: retval
-      type(dope) :: d
+      type(dope1) :: d
     end function
 
     function verify_double_1d_array_c(d) result(retval) bind(c)
@@ -81,7 +81,7 @@ module f_to_c
       use dope_mod
       implicit none
       logical(c_bool) :: retval
-      type(dope) :: d
+      type(dope1) :: d
     end function
 
     function verify_bool_1d_array_c(d) result(retval) bind(c)
@@ -90,7 +90,7 @@ module f_to_c
       use dope_mod
       implicit none
       logical(c_bool) :: retval
-      type(dope) :: d
+      type(dope1) :: d
     end function
   end interface
 
