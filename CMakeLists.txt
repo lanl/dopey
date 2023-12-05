@@ -47,7 +47,6 @@ install(TARGETS dopey_Fortran dopey_CXX EXPORT dopeyTargets
 install(
   FILES
     src/dopey/dope.hpp
-    ${CMAKE_CURRENT_BINARY_DIR}/src/dopey/dope_generated_sizes.h
     ${CMAKE_CURRENT_BINARY_DIR}/src/dopey/dope_generated_type_identifier_traits.hpp
     ${CMAKE_CURRENT_BINARY_DIR}/src/dope_mod.mod
   DESTINATION include/dopey
